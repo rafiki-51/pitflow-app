@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { CustomersPage } from "@/components/dashboard/customers/customers-page";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { createClient } from "@/lib/supabase/server";
+import type { Customer } from "@/types/customer";
 import type { UserProfile } from "@/types/profile";
 
 export default async function CustomersRoutePage() {
@@ -36,9 +37,18 @@ export default async function CustomersRoutePage() {
     );
   }
 
+  const { data: customers, error: customersError } = await supabase
+    .from("customers")
+    .select("id, full_name, email, phone, created_at")
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false });
+
   return (
     <DashboardShell profile={profile as UserProfile}>
-      <CustomersPage />
+      <CustomersPage
+        customers={(customers ?? []) as Customer[]}
+        error={customersError ? "customers_load_failed" : undefined}
+      />
     </DashboardShell>
   );
 }

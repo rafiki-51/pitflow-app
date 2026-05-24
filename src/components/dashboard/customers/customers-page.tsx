@@ -1,6 +1,13 @@
+import { CustomerList } from "@/components/dashboard/customers/customer-list";
 import { EmptyState } from "@/components/dashboard/empty-state";
+import type { Customer } from "@/types/customer";
 
-export function CustomersPage() {
+type CustomersPageProps = {
+  customers: Customer[];
+  error?: string;
+};
+
+export function CustomersPage({ customers, error }: CustomersPageProps) {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -23,10 +30,19 @@ export function CustomersPage() {
         </button>
       </div>
 
-      <EmptyState
-        title="Todavía no hay clientes para mostrar"
-        description="Cuando conectemos la base de datos, aquí aparecerán los clientes activos del taller."
-      />
+      {error ? (
+        <EmptyState
+          title="No se pudieron cargar los clientes"
+          description="Intenta nuevamente más tarde."
+        />
+      ) : customers.length > 0 ? (
+        <CustomerList customers={customers} />
+      ) : (
+        <EmptyState
+          title="Todavía no hay clientes para mostrar"
+          description="Cuando registres clientes, aparecerán aquí con su información básica."
+        />
+      )}
     </div>
   );
 }
