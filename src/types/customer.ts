@@ -5,3 +5,8 @@ export type Customer = {
   phone: string | null;
   created_at: string;
 };
+
+export type CreateCustomerFormState = {
+  success: boolean;
+  message: string;
+};

@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import { CustomerCreateForm } from "@/components/dashboard/customers/customer-create-form";
 import { CustomerList } from "@/components/dashboard/customers/customer-list";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import type { Customer } from "@/types/customer";
@@ -8,6 +12,8 @@ type CustomersPageProps = {
 };
 
 export function CustomersPage({ customers, error }: CustomersPageProps) {
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -23,12 +29,17 @@ export function CustomersPage({ customers, error }: CustomersPageProps) {
 
         <button
           type="button"
-          disabled
-          className="w-full rounded-md border border-border bg-surface-muted px-4 py-3 text-sm font-medium text-muted sm:w-auto"
+          onClick={() => setShowCreateForm(true)}
+          disabled={showCreateForm}
+          className="w-full rounded-md bg-accent px-4 py-3 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         >
           Nuevo cliente
         </button>
       </div>
+
+      {showCreateForm ? (
+        <CustomerCreateForm onCancel={() => setShowCreateForm(false)} />
+      ) : null}
 
       {error ? (
         <EmptyState
