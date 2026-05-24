@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
+import { CustomersPage } from "@/components/dashboard/customers/customers-page";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
-import { DashboardSectionCard } from "@/components/dashboard/dashboard-section-card";
 import { createClient } from "@/lib/supabase/server";
 import type { UserProfile } from "@/types/profile";
 
-export default async function DashboardPage() {
+export default async function CustomersRoutePage() {
   const supabase = await createClient();
 
   const {
@@ -38,28 +38,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardShell profile={profile as UserProfile}>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        <DashboardSectionCard
-          title="Clientes"
-          description="Organiza la relación con personas y empresas que llegan al taller."
-        />
-        <DashboardSectionCard
-          title="Vehículos"
-          description="Prepara el registro técnico de cada vehículo asociado a tus clientes."
-        />
-        <DashboardSectionCard
-          title="Órdenes"
-          description="Estructura el flujo principal de trabajo sin agregar operación todavía."
-        />
-        <DashboardSectionCard
-          title="Historial"
-          description="Reserva un espacio para servicios, comentarios y fotos futuras."
-        />
-        <DashboardSectionCard
-          title="Configuración"
-          description="Agrupa preferencias, usuarios y ajustes internos cuando llegue el momento."
-        />
-      </div>
+      <CustomersPage />
     </DashboardShell>
   );
 }

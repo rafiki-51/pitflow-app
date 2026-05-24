@@ -6,7 +6,7 @@ export const DASHBOARD_NAV_ITEMS = [
   },
   {
     label: "Clientes",
-    href: "/dashboard",
+    href: "/dashboard/customers",
     description: "Base futura de clientes.",
   },
   {
