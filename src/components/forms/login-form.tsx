@@ -1,24 +1,20 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   getProfileByUserId,
   signInWithPassword,
   signOut,
 } from "@/services/auth-service";
-import type { UserRole } from "@/types/auth";
-
-type AuthenticatedProfile = {
-  full_name: string;
-  role: UserRole;
-};
 
 export function LoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const [error, setError] = useState("");
-  const [profile, setProfile] = useState<AuthenticatedProfile | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,56 +39,25 @@ export function LoginForm() {
     }
 
     try {
-      const currentProfile = await getProfileByUserId(data.user.id);
-      setProfile({
-        full_name: currentProfile.full_name,
-        role: currentProfile.role,
-      });
+      await getProfileByUserId(data.user.id);
+      setRedirecting(true);
+      router.push("/dashboard");
+      router.refresh();
     } catch (profileError) {
       await signOut();
+      setLoading(false);
       setError(
         profileError instanceof Error
           ? profileError.message
           : "La sesión existe, pero no hay un perfil activo asociado.",
       );
-    } finally {
-      setLoading(false);
     }
   }
 
-  async function handleSignOut() {
-    setLoading(true);
-    setError("");
-    await signOut();
-    setProfile(null);
-    setPassword("");
-    setLoading(false);
-  }
-
-  if (profile) {
+  if (redirecting) {
     return (
       <div className="rounded-lg border border-border bg-surface p-6">
-        <div className="space-y-3">
-          <p className="text-sm font-medium text-accent">Sesión iniciada</p>
-          <div>
-            <p className="text-lg font-semibold text-foreground">
-              {profile.full_name}
-            </p>
-            <p className="text-sm text-muted">Rol: {profile.role}</p>
-          </div>
-          <p className="text-sm leading-6 text-muted">
-            El acceso privado se habilitará en el siguiente paso.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleSignOut}
-          disabled={loading}
-          className="mt-6 w-full rounded-md border border-border bg-surface-muted px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-surface disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          Cerrar sesión
-        </button>
+        <p className="text-sm font-medium text-accent">Redirigiendo...</p>
       </div>
     );
   }
